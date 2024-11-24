@@ -1,39 +1,43 @@
 <?php
 session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $product_id = $_POST['product_id'];
-    $product_name = $_POST['product_name'];
-    $product_price = $_POST['product_price'];
+// Initialize the cart if it doesn't exist
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
+}
 
-    $item = [
-        'id' => $product_id,
-        'name' => $product_name,
-        'price' => $product_price,
-        'quantity' => 1,
-    ];
+// Handle adding items to the cart
+if (isset($_POST['product_id'])) {
+    $productId = $_POST['product_id'];
+    $productName = $_POST['product_name'];
+    $productPrice = $_POST['product_price'];
 
-    // Initialize cart
-    if (!isset($_SESSION['cart'])) {
-        $_SESSION['cart'] = [];
-    }
-
-    // Check if the product is already in the cart
-    $is_in_cart = false;
-    foreach ($_SESSION['cart'] as &$cart_item) {
-        if ($cart_item['id'] === $product_id) {
-            $cart_item['quantity']++;
-            $is_in_cart = true;
+    // Check if the product already exists in the cart
+    $itemFound = false;
+    foreach ($_SESSION['cart'] as &$item) {
+        if ($item['id'] == $productId) {
+            $item['quantity'] += 1; // Increment quantity if the item already exists
+            $itemFound = true;
             break;
         }
     }
 
-    // Add new product if not in cart
-    if (!$is_in_cart) {
-        $_SESSION['cart'][] = $item;
+    // Add new item if it doesn't exist in the cart
+    if (!$itemFound) {
+        $_SESSION['cart'][] = [
+            'id' => $productId,
+            'name' => $productName,
+            'price' => $productPrice,
+            'quantity' => 1, // Initialize quantity to 1
+        ];
     }
 
-    header('Location: cart.php');
+    echo json_encode([
+        'success' => true,
+        'cartCount' => count($_SESSION['cart']),
+    ]);
     exit;
 }
-?>
+
+echo json_encode(['success' => false]);
+exit;

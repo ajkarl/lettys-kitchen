@@ -59,6 +59,25 @@ if (isset($_POST['edit_product'])) {
     echo "<p class='text-green-500'>Product updated successfully!</p>";
 }
 
+// Delete Product Handler
+if (isset($_POST['delete_product'])) {
+    $productId = $_POST['delete_product_id'];
+
+    // Check if the product has associated sales
+    $salesCheckStmt = $pdo->prepare("SELECT COUNT(*) FROM sales WHERE product_id = ?");
+    $salesCheckStmt->execute([$productId]);
+    $hasSales = $salesCheckStmt->fetchColumn() > 0;
+
+    if ($hasSales) {
+        echo "<p class='text-red-500'>Cannot delete product with associated sales.</p>";
+    } else {
+        // Delete product
+        $deleteStmt = $pdo->prepare("DELETE FROM products WHERE id = ?");
+        $deleteStmt->execute([$productId]);
+        echo "<p class='text-green-500'>Product deleted successfully!</p>";
+    }
+}
+
 // Display Products
 $stmt = $pdo->query("SELECT * FROM products");
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -79,7 +98,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tr>
                 <td class="border px-4 py-2"><?= $product['id'] ?></td>
                 <td class="border px-4 py-2"><?= htmlspecialchars($product['name']) ?></td>
-                <td class="border px-4 py-2">$<?= number_format($product['price'], 2) ?></td>
+                <td class="border px-4 py-2">₱<?= number_format($product['price'], 2) ?></td>
                 <td class="border px-4 py-2">
                     <?php if (!empty($product['image_url'])): ?>
                         <img src="<?= $product['image_url'] ?>" alt="<?= htmlspecialchars($product['name']) ?>" class="w-16 h-16 object-cover rounded">
@@ -97,6 +116,12 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <option value="Not Available" <?= ($product['status'] ?? '') === 'Not Available' ? 'selected' : '' ?>>Not Available</option>
                         </select>
                         <button type="submit" name="edit_product" class="bg-blue-500 text-white px-2 py-1 rounded">Update</button>
+                    </form>
+
+                    <!-- Delete Button -->
+                    <form method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                        <input type="hidden" name="delete_product_id" value="<?= $product['id'] ?>">
+                        <button type="submit" name="delete_product" class="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
                     </form>
                 </td>
             </tr>
