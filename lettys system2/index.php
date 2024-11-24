@@ -48,10 +48,10 @@ $userName = $isLoggedIn ? $_SESSION['user_name'] : '';
             <!-- Login/Signup or Profile -->
             <?php if ($isLoggedIn): ?>
                 <!-- Profile Icon if logged in -->
-                <a href="profile.php" class="hover:text-gray-300">
+                <a href="account.php" class="hover:text-gray-300">
                     <i class="fas fa-user"></i> <?php echo htmlspecialchars($userName); ?>
                 </a>
-                <a href="logout.php" class="hover:text-gray-300">Logout</a>
+                <a href="signup.php" class="hover:text-gray-300">Logout</a>
             <?php else: ?>
                 <!-- Login/Signup Icon if not logged in -->
                 <a href="login.php" class="hover:text-gray-300">
