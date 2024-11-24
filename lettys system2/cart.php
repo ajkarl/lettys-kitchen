@@ -4,7 +4,6 @@ require 'db.php'; // Include your database connection
 
 // Handle remove item request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Remove an item from the cart
     if (isset($_POST['remove_id'])) {
         $removeId = $_POST['remove_id'];
         if (isset($_SESSION['cart'][$removeId])) {
@@ -12,36 +11,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Handle quantity update request
+    // Handle quantity update request (Increase or Decrease)
     if (isset($_POST['update_quantity'])) {
-        // Check if the 'product_id' is set in the POST request
         if (isset($_POST['product_id'])) {
             $productId = $_POST['product_id'];
-            $newQuantity = $_POST['quantity'];
+            $currentQuantity = isset($_SESSION['cart'][$productId]['quantity']) ? $_SESSION['cart'][$productId]['quantity'] : 1;
 
-            // Update the quantity in the cart
-            if (isset($_SESSION['cart'][$productId]) && $newQuantity > 0) {
-                $_SESSION['cart'][$productId]['quantity'] = $newQuantity;
+            if ($_POST['update_quantity'] === 'plus') {
+                $_SESSION['cart'][$productId]['quantity'] = $currentQuantity + 1;
+            } elseif ($_POST['update_quantity'] === 'minus' && $currentQuantity > 1) {
+                $_SESSION['cart'][$productId]['quantity'] = $currentQuantity - 1;
             }
         }
     }
 
-    // Handle order now action
+    // Handle "Order Now" action for a specific product
     if (isset($_POST['order_now'])) {
-        if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
-            // Calculate the total order value
-            $orderTotal = array_sum(
-                array_map(fn($item) => (isset($item['quantity']) ? $item['quantity'] : 1) * $item['price'], $_SESSION['cart'])
-            );
+        if (isset($_POST['order_id'])) {
+            $orderTotal = 0;
+            foreach ($_POST['order_id'] as $productId) {
+                if (isset($_SESSION['cart'][$productId])) {
+                    $item = $_SESSION['cart'][$productId];
+                    $quantity = isset($item['quantity']) ? $item['quantity'] : 1;
+                    $orderTotal += $quantity * $item['price'];
 
-            // Update the admin's total sales in the database
+                    $stmt = $pdo->prepare("UPDATE admin_total_sales SET total_sales = total_sales + ?");
+                    $stmt->execute([$orderTotal]);
+
+                    unset($_SESSION['cart'][$productId]);
+                }
+            }
+
+            echo "<p class='text-green-500 text-center mb-4'>Order placed successfully! Total: ₱" . number_format($orderTotal, 2) . "</p>";
+        }
+    }
+
+    // Handle "Order All" action for all items in the cart
+    if (isset($_POST['order_all'])) {
+        if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
+            $orderTotal = array_sum(array_map(fn($item) => (isset($item['quantity']) ? $item['quantity'] : 1) * $item['price'], $_SESSION['cart']));
+
             $stmt = $pdo->prepare("UPDATE admin_total_sales SET total_sales = total_sales + ?");
             $stmt->execute([$orderTotal]);
 
-            // Success message
             echo "<p class='text-green-500 text-center mb-4'>Order placed successfully! Total: ₱" . number_format($orderTotal, 2) . "</p>";
 
-            // Clear the cart after placing the order
             unset($_SESSION['cart']);
         } else {
             echo "<p class='text-red-500 text-center mb-4'>Your cart is empty. Add items before ordering!</p>";
@@ -56,9 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { font-family: Arial, sans-serif; }
-    </style>
 </head>
 <body class="bg-gray-100">
 
@@ -79,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <th class="py-2 px-4 border">Price</th>
                         <th class="py-2 px-4 border">Quantity</th>
                         <th class="py-2 px-4 border">Total</th>
+                        <th class="py-2 px-4 border">Order Now</th>
                         <th class="py-2 px-4 border">Action</th>
                     </tr>
                 </thead>
@@ -88,7 +100,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <td class="py-2 px-4 border"><?php echo htmlspecialchars($item['name']); ?></td>
                         <td class="py-2 px-4 border">₱<?php echo number_format($item['price'], 2); ?></td>
                         <td class="py-2 px-4 border">
-                            <!-- Plus/Minus Buttons for Quantity -->
                             <div class="flex items-center space-x-2">
                                 <form method="POST" action="">
                                     <input type="hidden" name="product_id" value="<?php echo $productId; ?>">
@@ -99,6 +110,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </td>
                         <td class="py-2 px-4 border">₱<?php echo number_format((isset($item['quantity']) ? $item['quantity'] : 1) * $item['price'], 2); ?></td>
+                        <td class="py-2 px-4 border">
+                            <input type="checkbox" name="order_id[]" value="<?php echo $productId; ?>">
+                        </td>
                         <td class="py-2 px-4 border">
                             <form method="POST" action="">
                                 <input type="hidden" name="remove_id" value="<?php echo $productId; ?>">
@@ -118,11 +132,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ), 2); 
                     ?>
                 </p>
-                <button type="submit" name="order_now" class="bg-green-500 text-white px-4 py-2 rounded">Order Now</button>
+            </div>
+
+            <div class="flex justify-center mt-4">
             </div>
         </form>
     <?php else: ?>
         <p class="text-center text-gray-700 mt-4">Your cart is empty.</p>
+    <?php endif; ?>
+    
+    <!-- Proceed to Checkout Button -->
+    <?php if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0): ?>
+        <div class="flex justify-center mt-6">
+            <form action="checkout.php" method="GET">
+                <button type="submit" class="bg-yellow-500 text-white px-6 py-2 rounded">Proceed to Checkout</button>
+            </form>
+        </div>
     <?php endif; ?>
 </main>
 
