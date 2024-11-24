@@ -10,6 +10,10 @@ if (!isset($_SESSION['cart'])) {
 // Fetch products from the database
 $query = $pdo->query("SELECT * FROM products");
 $products = $query->fetchAll(PDO::FETCH_ASSOC);
+
+// Check if user is logged in
+$isLoggedIn = isset($_SESSION['user_id']);
+$userName = $isLoggedIn ? $_SESSION['user_name'] : '';
 ?>
 
 <!DOCTYPE html>
@@ -40,6 +44,23 @@ $products = $query->fetchAll(PDO::FETCH_ASSOC);
                 <i class="fas fa-shopping-cart"></i> 
                 <?php echo count($_SESSION['cart']); ?>
             </a>
+
+            <!-- Login/Signup or Profile -->
+            <?php if ($isLoggedIn): ?>
+                <!-- Profile Icon if logged in -->
+                <a href="profile.php" class="hover:text-gray-300">
+                    <i class="fas fa-user"></i> <?php echo htmlspecialchars($userName); ?>
+                </a>
+                <a href="logout.php" class="hover:text-gray-300">Logout</a>
+            <?php else: ?>
+                <!-- Login/Signup Icon if not logged in -->
+                <a href="login.php" class="hover:text-gray-300">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="signup.php" class="hover:text-gray-300">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
+            <?php endif; ?>
         </div>
     </div>
 </header>
