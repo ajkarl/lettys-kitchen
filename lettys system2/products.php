@@ -48,6 +48,17 @@ if (isset($_POST['add_product'])) {
     echo "<p class='text-green-500'>Product added successfully!</p>";
 }
 
+// Update Product Handler
+if (isset($_POST['edit_product'])) {
+    $id = $_POST['product_id'];
+    $status = $_POST['status'];
+
+    $stmt = $pdo->prepare("UPDATE products SET status = ? WHERE id = ?");
+    $stmt->execute([$status, $id]);
+
+    echo "<p class='text-green-500'>Product updated successfully!</p>";
+}
+
 // Display Products
 $stmt = $pdo->query("SELECT * FROM products");
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -59,6 +70,8 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <th class="border px-4 py-2">Name</th>
             <th class="border px-4 py-2">Price</th>
             <th class="border px-4 py-2">Image</th>
+            <th class="border px-4 py-2">Status</th>
+            <th class="border px-4 py-2">Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -73,6 +86,18 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php else: ?>
                         No Image
                     <?php endif; ?>
+                </td>
+                <td class="border px-4 py-2"><?= $product['status'] ?? 'Available' ?></td>
+                <td class="border px-4 py-2">
+                    <form method="POST" class="inline">
+                        <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
+                        <select name="status" class="border rounded p-1">
+                            <option value="Available" <?= ($product['status'] ?? 'Available') === 'Available' ? 'selected' : '' ?>>Available</option>
+                            <option value="Sold Out" <?= ($product['status'] ?? '') === 'Sold Out' ? 'selected' : '' ?>>Sold Out</option>
+                            <option value="Not Available" <?= ($product['status'] ?? '') === 'Not Available' ? 'selected' : '' ?>>Not Available</option>
+                        </select>
+                        <button type="submit" name="edit_product" class="bg-blue-500 text-white px-2 py-1 rounded">Update</button>
+                    </form>
                 </td>
             </tr>
         <?php endforeach; ?>

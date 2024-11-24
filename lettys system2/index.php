@@ -80,15 +80,21 @@ $userName = $isLoggedIn ? $_SESSION['user_name'] : '';
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             <?php foreach ($products as $product): ?>
             <div class="bg-white p-4 rounded-lg shadow">
-                <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="w-full h-48 object-cover mb-4 rounded">
+                <img src="<?php echo $product['image_url']; ?>" alt="<?php echo $product['name']; ?>" class="w-full h-48 object-cover mb-4 rounded">
                 <h3 class="text-lg font-bold mb-2"><?php echo $product['name']; ?></h3>
                 <p class="text-gray-700 mb-2">$<?php echo number_format($product['price'], 2); ?></p>
-                <form method="POST" action="add-to-cart.php">
-                    <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                    <input type="hidden" name="product_name" value="<?php echo $product['name']; ?>">
-                    <input type="hidden" name="product_price" value="<?php echo $product['price']; ?>">
-                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Add to Cart</button>
-                </form>
+                
+                <?php if ($product['status'] === 'Sold Out' || $product['status'] === 'Not Available'): ?>
+                    <p class="text-red-500 font-bold mb-2"><?php echo $product['status']; ?></p>
+                    <button disabled class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed">Unavailable</button>
+                <?php else: ?>
+                    <form method="POST" action="add-to-cart.php">
+                        <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
+                        <input type="hidden" name="product_name" value="<?php echo $product['name']; ?>">
+                        <input type="hidden" name="product_price" value="<?php echo $product['price']; ?>">
+                        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Add to Cart</button>
+                    </form>
+                <?php endif; ?>
             </div>
             <?php endforeach; ?>
         </div>
