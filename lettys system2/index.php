@@ -79,10 +79,8 @@ $userName = $isLoggedIn ? $_SESSION['user_name'] : '';
     <div class="container mx-auto flex justify-between items-center py-4 px-6">
         <div class="text-2xl font-bold">Letty's Kitchen</div>
         <div class="flex items-center space-x-4">
-            <a class="hover:text-gray-300" href="index.php">Home</a>
+            <a class="hover:text-gray-300" href="home page.php">Home</a>
             <a class="hover:text-gray-300" href="productscustomer.php">Shop</a>
-            <a class="hover:text-gray-300" href="#">About</a>
-            <a class="hover:text-gray-300" href="#">Contact</a>
             <a class="hover:text-gray-300" href="cart.php">
                 <i class="fas fa-shopping-cart"></i> 
                 <span id="cart-count"><?php echo count($_SESSION['cart']); ?></span>
@@ -111,7 +109,7 @@ $userName = $isLoggedIn ? $_SESSION['user_name'] : '';
     <!-- Hero Section -->
     <section class="bg-red-500 text-white p-8 rounded-lg mb-8">
         <h1 class="text-4xl font-bold mb-4">Welcome to Letty's Kitchen</h1>
-        <p class="text-lg mb-4">Your one-stop shop for all your kitchen needs.</p>
+        <p class="text-lg mb-4">Your one-stop shop for all your lutong bahay ulam</p>
         <a href="#products" class="bg-white text-red-500 px-4 py-2 rounded">Shop Now</a>
     </section>
 

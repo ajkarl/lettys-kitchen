@@ -10,7 +10,6 @@ if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
 
 // Calculate total amount
 $totalAmount = 0;
-
 ?>
 
 <!DOCTYPE html>
@@ -70,20 +69,28 @@ $totalAmount = 0;
         <!-- Delivery Information -->
         <div class="mt-6">
             <h3 class="text-lg font-semibold mb-4">Delivery Information</h3>
-            <label for="address" class="block text-sm">Delivery Address:</label>
-            <input type="text" id="address" name="address" class="w-full px-4 py-2 border rounded" required placeholder="Enter your delivery address">
-
-            <label for="instructions" class="block text-sm mt-4">Special Instructions for the Driver:</label>
-            <textarea id="instructions" name="instructions" class="w-full px-4 py-2 border rounded" rows="4" placeholder="Any special instructions for the driver?"></textarea>
 
             <label for="delivery_option" class="block text-sm mt-4">Delivery Option:</label>
-            <select id="delivery_option" name="delivery_option" class="w-full px-4 py-2 border rounded">
+            <select id="delivery_option" name="delivery_option" class="w-full px-4 py-2 border rounded" onchange="toggleDeliveryFields()">
                 <option value="standard">Standard Delivery</option>
                 <option value="express">Express Delivery</option>
+                <option value="pickup">Pick up</option>
             </select>
 
-            <label for="schedule" class="block text-sm mt-4">Delivery Schedule:</label>
-            <input type="datetime-local" id="schedule" name="schedule" class="w-full px-4 py-2 border rounded" required>
+            <!-- Fields to Show/Hide -->
+            <div id="delivery_fields">
+                <label for="address" class="block text-sm mt-4">Delivery Address:</label>
+                <input type="text" id="address" name="address" class="w-full px-4 py-2 border rounded" required placeholder="Enter your delivery address">
+
+                <label for="instructions" class="block text-sm mt-4">Special Instructions for the Driver:</label>
+                <textarea id="instructions" name="instructions" class="w-full px-4 py-2 border rounded" rows="4" placeholder="Any special instructions for the driver?"></textarea>
+
+                <label for="schedule" class="block text-sm mt-4">Delivery Schedule:</label>
+                <input type="datetime-local" id="schedule" name="schedule" class="w-full px-4 py-2 border rounded" required>
+
+                <label for="tip" class="block text-sm mt-4">Tip (if paying via GCash):</label>
+                <input type="number" id="tip" name="tip" class="w-full px-4 py-2 border rounded" placeholder="Enter tip amount" min="0" step="50">
+            </div>
 
             <label for="payment_method" class="block text-sm mt-4">Payment Method:</label>
             <select id="payment_method" name="payment_method" class="w-full px-4 py-2 border rounded" required>
@@ -92,13 +99,9 @@ $totalAmount = 0;
                 <option value="paypal">PayPal</option>
             </select>
 
-            <label for="tip" class="block text-sm mt-4">Tip (if paying via GCash):</label>
-            <input type="number" id="tip" name="tip" class="w-full px-4 py-2 border rounded" placeholder="Enter tip amount" min="0" step="50">
-
             <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded mt-6">Place Order</button>
         </div>
     </form>
-
 </main>
 
 <footer class="bg-red-600 text-white py-4">
@@ -106,6 +109,22 @@ $totalAmount = 0;
         <p>© <?php echo date('Y'); ?> Letty's Kitchen. All rights reserved.</p>
     </div>
 </footer>
+
+<script>
+    function toggleDeliveryFields() {
+        const deliveryOption = document.getElementById("delivery_option").value;
+        const deliveryFields = document.getElementById("delivery_fields");
+
+        if (deliveryOption === "pickup") {
+            deliveryFields.style.display = "none";
+        } else {
+            deliveryFields.style.display = "block";
+        }
+    }
+
+    // Run on page load to set initial state
+    document.addEventListener("DOMContentLoaded", toggleDeliveryFields);
+</script>
 
 </body>
 </html>
