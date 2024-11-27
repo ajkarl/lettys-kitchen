@@ -1,5 +1,7 @@
-<?php include 'db.php'; ?>
-<?php include 'header.php'; ?>
+<?php
+include 'db.php';
+include 'header.php';
+?>
 
 <h2 class="text-2xl font-bold mb-4">Products</h2>
 
@@ -7,6 +9,7 @@
 <form method="POST" enctype="multipart/form-data" class="mb-6 bg-white p-4 rounded shadow">
     <h3 class="text-lg font-bold mb-2">Add Product</h3>
     <input type="text" name="name" placeholder="Product Name" required class="w-full mb-2 p-2 border rounded">
+    <textarea name="description" placeholder="Product Description" required class="w-full mb-2 p-2 border rounded"></textarea>
     <input type="number" step="0.01" name="price" placeholder="Price" required class="w-full mb-2 p-2 border rounded">
     <label class="block mb-2">Upload Image:</label>
     <input type="file" name="image" accept="image/*" class="w-full mb-2 p-2 border rounded">
@@ -17,6 +20,7 @@
 // Add Product Handler
 if (isset($_POST['add_product'])) {
     $name = $_POST['name'];
+    $description = $_POST['description'];
     $price = $_POST['price'];
 
     // Handle file upload
@@ -43,8 +47,8 @@ if (isset($_POST['add_product'])) {
     }
 
     // Insert product into the database
-    $stmt = $pdo->prepare("INSERT INTO products (name, price, image_url) VALUES (?, ?, ?)");
-    $stmt->execute([$name, $price, $image_url]);
+    $stmt = $pdo->prepare("INSERT INTO products (name, description, price, image_url) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$name, $description, $price, $image_url]);
     echo "<p class='text-green-500'>Product added successfully!</p>";
 }
 
@@ -87,6 +91,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <tr>
             <th class="border px-4 py-2">ID</th>
             <th class="border px-4 py-2">Name</th>
+            <th class="border px-4 py-2">Description</th>
             <th class="border px-4 py-2">Price</th>
             <th class="border px-4 py-2">Image</th>
             <th class="border px-4 py-2">Status</th>
@@ -98,6 +103,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tr>
                 <td class="border px-4 py-2"><?= $product['id'] ?></td>
                 <td class="border px-4 py-2"><?= htmlspecialchars($product['name']) ?></td>
+                <td class="border px-4 py-2"><?= htmlspecialchars($product['description']) ?></td>
                 <td class="border px-4 py-2">₱<?= number_format($product['price'], 2) ?></td>
                 <td class="border px-4 py-2">
                     <?php if (!empty($product['image_url'])): ?>

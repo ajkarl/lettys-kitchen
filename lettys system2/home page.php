@@ -42,7 +42,7 @@ if (!$result) {
         <div class="container">
             <h2>Delicious Filipino Dishes Delivered to Your Doorstep</h2>
             <p>Enjoy the authentic taste of Filipino cuisine, crafted with love and the finest ingredients.</p>
-            <a href="menu.php" class="btn">Explore Our Menu</a>
+            <a href="index.php" class="btn">Explore Our Menu</a>
         </div>
     </section>
 
@@ -54,11 +54,13 @@ if (!$result) {
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) { ?>
                         <div class="product-card">
-                            <img src="<?php echo $row['image_path']; ?>" alt="<?php echo htmlspecialchars($row['name']); ?>" class="product-image">
-                            <h3><?php echo htmlspecialchars($row['name']); ?></h3>
-                            <p><?php echo htmlspecialchars($row['description']); ?></p>
-                            <p class="price">$<?php echo number_format($row['price'], 2); ?></p>
-                            <a href="add_to_cart.php?product_id=<?php echo $row['id']; ?>" class="btn">Add to Cart</a>
+                            <img src="<?php echo htmlspecialchars(isset($row['image_path']) ? $row['image_path'] : 'default.jpg'); ?>" 
+                                 alt="<?php echo htmlspecialchars(isset($row['name']) ? $row['name'] : 'Unnamed Dish'); ?>" 
+                                 class="product-image">
+                            <h3><?php echo htmlspecialchars(isset($row['name']) ? $row['name'] : 'Unnamed Dish'); ?></h3>
+                            <p><?php echo htmlspecialchars(isset($row['description']) ? $row['description'] : 'Description not available'); ?></p>
+                            <p class="price">$<?php echo isset($row['price']) ? number_format($row['price'], 2) : '0.00'; ?></p>
+                            <a href="add_to_cart.php?product_id=<?php echo isset($row['id']) ? $row['id'] : '#'; ?>" class="btn">Add to Cart</a>
                         </div>
                 <?php } 
                 } else { ?>
