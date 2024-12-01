@@ -13,7 +13,7 @@
         <nav class="space-x-4">
             <a href="products.php" class="hover:text-gray-300">Products</a>
             <a href="sales.php" class="hover:text-gray-300">Sales</a>
-            <a href="admin.php" class="hover:text-gray-300">Returns</a>
+            <a class="hover:text-gray-300" href="admin.php">Dashboard</a>
             <a href="topselling.php" class="hover:text-gray-300">Top Selling</a>
             <a href="feedback.php" class="hover:text-gray-300">Feedback</a>
         </nav>

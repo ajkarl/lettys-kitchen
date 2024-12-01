@@ -20,8 +20,8 @@ if (isset($_POST['ajax_add_to_cart'])) {
         'price' => $productPrice,
     ];
 
-    echo json_encode([
-        'success' => true,
+    echo json_encode([ 
+        'success' => true, 
         'cartCount' => count($_SESSION['cart']),
     ]);
     exit;
@@ -189,6 +189,23 @@ $userName = $isLoggedIn ? $_SESSION['user_name'] : '';
             }
         });
     });
+
+    // Detect if the user is logged in and warn them if not
+    const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
+
+    // Show a notification when the user attempts to leave the page
+    window.onbeforeunload = function(event) {
+        if (!isLoggedIn) {
+            const message = "You are not logged in. Please log in again.";
+            if (typeof event === "undefined") {
+                event = window.event; // For IE
+            }
+            if (event) {
+                event.returnValue = message;  // Standard for most browsers
+            }
+            return message; // For some browsers like Chrome
+        }
+    };
 </script>
 
 </body>

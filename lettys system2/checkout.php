@@ -1,15 +1,5 @@
 <?php
 session_start();
-require 'db.php'; // Include your database connection
-
-// If the cart is empty or not set, show a message
-if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
-    echo "Your cart is empty!";
-    exit;
-}
-
-// Calculate total amount
-$totalAmount = 0;
 ?>
 
 <!DOCTYPE html>
@@ -43,8 +33,8 @@ $totalAmount = 0;
         </thead>
         <tbody>
             <?php
-            foreach ($_SESSION['cart'] as $productId => $item):
-                // Ensure quantity is set, default to 1 if not
+            $totalAmount = 0;
+            foreach ($_SESSION['cart'] as $item):
                 $quantity = isset($item['quantity']) ? $item['quantity'] : 1;
                 $itemTotal = $quantity * $item['price'];
                 $totalAmount += $itemTotal;
@@ -71,13 +61,12 @@ $totalAmount = 0;
             <h3 class="text-lg font-semibold mb-4">Delivery Information</h3>
 
             <label for="delivery_option" class="block text-sm mt-4">Delivery Option:</label>
-            <select id="delivery_option" name="delivery_option" class="w-full px-4 py-2 border rounded" onchange="toggleDeliveryFields()">
+            <select id="delivery_option" name="delivery_option" class="w-full px-4 py-2 border rounded">
                 <option value="standard">Standard Delivery</option>
                 <option value="express">Express Delivery</option>
                 <option value="pickup">Pick up</option>
             </select>
 
-            <!-- Fields to Show/Hide -->
             <div id="delivery_fields">
                 <label for="address" class="block text-sm mt-4">Delivery Address:</label>
                 <input type="text" id="address" name="address" class="w-full px-4 py-2 border rounded" required placeholder="Enter your delivery address">
@@ -109,22 +98,6 @@ $totalAmount = 0;
         <p>© <?php echo date('Y'); ?> Letty's Kitchen. All rights reserved.</p>
     </div>
 </footer>
-
-<script>
-    function toggleDeliveryFields() {
-        const deliveryOption = document.getElementById("delivery_option").value;
-        const deliveryFields = document.getElementById("delivery_fields");
-
-        if (deliveryOption === "pickup") {
-            deliveryFields.style.display = "none";
-        } else {
-            deliveryFields.style.display = "block";
-        }
-    }
-
-    // Run on page load to set initial state
-    document.addEventListener("DOMContentLoaded", toggleDeliveryFields);
-</script>
 
 </body>
 </html>

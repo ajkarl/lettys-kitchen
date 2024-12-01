@@ -1,29 +1,31 @@
 <?php
 session_start();
-require 'db.php'; // Include the database connection
+require 'db.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirect to login page if not logged in
+    header("Location: login.php");
     exit();
 }
 
-// Get the user ID from the session
-$user_id = $_SESSION['user_id'];
+// Process form data
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $user_id = $_SESSION['user_id'];
+    $name = htmlspecialchars($_POST['name']);
+    $email = htmlspecialchars($_POST['email']);
+    $contact = htmlspecialchars($_POST['contact']);
+    $address = htmlspecialchars($_POST['address']);
 
-// Get the updated user data from the form
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $contact = $_POST['contact'];
-    $address = $_POST['address'];
+    try {
+        // Update user details in the database
+        $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ?, contact = ?, address = ? WHERE id = ?");
+        $stmt->execute([$name, $email, $contact, $address, $user_id]);
 
-    // Update user data in the database
-    $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ?, contact = ?, address = ? WHERE id = ?");
-    $stmt->execute([$name, $email, $contact, $address, $user_id]);
-
-    // Redirect back to the account page
-    header('Location: account.php');
-    exit();
+        // Redirect to account page with success message
+        $_SESSION['success'] = "Account updated successfully!";
+        header("Location: account.php");
+        exit();
+    } catch (PDOException $e) {
+        die("Error updating account: " . $e->getMessage());
+    }
 }
-?>

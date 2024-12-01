@@ -1,10 +1,10 @@
 <?php
 session_start();
-require 'db.php'; // Include the database connection
+require 'db.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirect to login page if not logged in
+    header("Location: login.php");
     exit();
 }
 
@@ -40,53 +40,45 @@ if (!$user) {
     <div class="p-6">
         <h2 class="text-lg font-bold mb-4">Account Information</h2>
         <form action="update_account.php" method="POST" class="space-y-4">
-            <div class="mb-4 flex items-center">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold">Name</label>
                 <input 
                     type="text" 
                     name="name" 
                     value="<?php echo htmlspecialchars($user['name']); ?>" 
-                    class="border border-gray-300 p-2 flex-grow" 
+                    class="border border-gray-300 p-2 w-full rounded" 
                     required
                 >
-                <button class="ml-2 text-red-600 flex items-center">
-                    <i class="fas fa-edit mr-1"></i> Edit
-                </button>
             </div>
-            <div class="mb-4 flex items-center">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold">Email</label>
                 <input 
                     type="email" 
                     name="email" 
                     value="<?php echo htmlspecialchars($user['email']); ?>" 
-                    class="border border-gray-300 p-2 flex-grow" 
+                    class="border border-gray-300 p-2 w-full rounded" 
                     required
                 >
-                <button class="ml-2 text-red-600 flex items-center">
-                    <i class="fas fa-edit mr-1"></i> Edit
-                </button>
             </div>
-            <div class="mb-4 flex items-center">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold">Contact</label>
                 <input 
                     type="text" 
                     name="contact" 
                     value="<?php echo htmlspecialchars($user['contact']); ?>" 
-                    class="border border-gray-300 p-2 flex-grow" 
+                    class="border border-gray-300 p-2 w-full rounded" 
                     required
                 >
-                <button class="ml-2 text-red-600 flex items-center">
-                    <i class="fas fa-edit mr-1"></i> Edit
-                </button>
             </div>
-            <div class="mb-4 flex items-center">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold">Address</label>
                 <input 
                     type="text" 
                     name="address" 
                     value="<?php echo htmlspecialchars($user['address']); ?>" 
-                    class="border border-gray-300 p-2 flex-grow" 
+                    class="border border-gray-300 p-2 w-full rounded" 
                     required
                 >
-                <button class="ml-2 text-red-600 flex items-center">
-                    <i class="fas fa-edit mr-1"></i> Edit
-                </button>
             </div>
             <div>
                 <button type="submit" class="w-full px-4 py-2 text-white bg-red-600 rounded-full hover:bg-red-700">
